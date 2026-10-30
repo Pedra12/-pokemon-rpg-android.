@@ -79,6 +79,7 @@ jobs:
             adb pull /sdcard/aventura-elemental.png ./aventura-elemental-smoke-test.png
 
       - name: Publicar captura do teste de abertura
+        if: always() && hashFiles('aventura-elemental-smoke-test.png') != ''
         uses: actions/upload-artifact@v4
         with:
           name: captura-teste-android
@@ -87,6 +88,7 @@ jobs:
           retention-days: 14
 
       - name: Publicar APK para instalação no Android
+        if: always() && hashFiles('project/app/build/outputs/apk/debug/app-debug.apk') != ''
         uses: actions/upload-artifact@v4
         with:
           name: aventura-elemental-android-debug
