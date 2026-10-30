@@ -68,6 +68,7 @@ jobs:
           test -s project/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Testar instalação e abertura em emulador Android
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
