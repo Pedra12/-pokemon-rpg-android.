@@ -100,7 +100,7 @@ rep("""        playerX = nx
 
 rep('                    TextButton(onClick = { save(); screen = "home" }) { Text("MENU", color = Gold) }\n',
     '                    TextButton(onClick = { screen = "team" }) {\n'
-    '                        Text("EQUIPE (\${1 + capturedCreatures.split("|").count { it.isNotBlank() }})", color = Gold)\n'
+    '                        Text("EQUIPE (${1 + capturedCreatures.split("|").count { it.isNotBlank() }})", color = Gold)\n'
     '                    }\n'
     '                    TextButton(onClick = { save(); screen = "home" }) { Text("MENU", color = Gold) }\n',
     "team button")
@@ -111,7 +111,7 @@ rep('                        Text("Treinador Nv. $level  •  $xp XP", color = P
     '                        Text("$playerName  Nv. $level  •  $xp XP", color = Paper, fontSize = 13.sp)\n',
     "player display")
 rep('                    StatCard("VIDA", "$playerHp/44", Modifier.weight(1f))\n',
-    '                    StatCard("CRIATURAS", "\${1 + capturedCreatures.split("|").count { it.isNotBlank() }}", Modifier.weight(1f))\n',
+    '                    StatCard("CRIATURAS", "${1 + capturedCreatures.split("|").count { it.isNotBlank() }}", Modifier.weight(1f))\n',
     "collection counter")
 
 rep("""                                battleResolved = true
@@ -172,7 +172,7 @@ rep("            else -> Unit\n",
                     Text("Sua equipe ainda está começando. Capture criaturas durante os encontros.", color = Color.LightGray, textAlign = TextAlign.Center)
                 } else {
                     owned.forEachIndexed { index, name ->
-                        Text("\${index + 1}. $name", color = Paper, modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp))
+                        Text("${index + 1}. $name", color = Paper, modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp))
                     }
                 }
                 Spacer(Modifier.height(22.dp))
