@@ -205,5 +205,92 @@ rep("        Canvas(Modifier.fillMaxWidth().height(310.dp)) {",
             }
         ) {""", "drag movement")
 
+
+# Replace placeholder vector monsters with the supplied pixel-art slime sprites.
+rep("import androidx.compose.ui.graphics.Color\n",
+    "import androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.graphics.ColorFilter\n", "pixel-art color filter import")
+
+rep("    var anim by remember { mutableIntStateOf(0) }\n",
+    "    var anim by remember { mutableIntStateOf(0) }\n    var attackFrame by remember { mutableIntStateOf(-1) }\n", "attack animation state")
+rep("    var battleResolved by remember { mutableStateOf(false) }\n",
+    "    var battleResolved by remember { mutableStateOf(false) }\n"
+    "    LaunchedEffect(anim) {\n"
+    "        if (anim > 0) {\n"
+    "            for (frame in 0..4) { attackFrame = frame; delay(45) }\n"
+    "            attackFrame = -1\n"
+    "        }\n"
+    "    }\n", "attack animation effect")
+
+rep('''                Text(message, color = Paper, modifier = Modifier.fillMaxWidth().background(Panel, RoundedCornerShape(12.dp)).padding(14.dp), textAlign = TextAlign.Center)
+                Spacer(Modifier.height(16.dp))
+''',
+'''                Text(message, color = Paper, modifier = Modifier.fillMaxWidth().background(Panel, RoundedCornerShape(12.dp)).padding(14.dp), textAlign = TextAlign.Center)
+                if (attackFrame >= 0) AttackBurst(attackFrame, Gold, Modifier.size(52.dp))
+                Spacer(Modifier.height(16.dp))
+''', "battle attack effect display")
+
+old_creature = """@Composable
+fun CreatureArt(color: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val w = size.width; val h = size.height
+        // sombra
+        drawOval(Color(0x55000000), Offset(w*.18f,h*.78f), Size(w*.64f,h*.12f))
+        // corpo e orelhas
+        drawCircle(color, radius = w*.31f, center = Offset(w*.5f,h*.53f))
+        drawCircle(color, radius = w*.15f, center = Offset(w*.28f,h*.28f))
+        drawCircle(color, radius = w*.15f, center = Offset(w*.72f,h*.28f))
+        drawCircle(Color(0xFF26364A), radius = w*.045f, center = Offset(w*.4f,h*.48f))
+        drawCircle(Color(0xFF26364A), radius = w*.045f, center = Offset(w*.6f,h*.48f))
+        drawArc(Color(0xFF26364A), 15f, 150f, false, Offset(w*.4f,h*.53f), Size(w*.2f,h*.13f), style = Stroke(width = w*.025f))
+        drawCircle(Color.White, radius = w*.018f, center = Offset(w*.41f,h*.465f))
+        drawCircle(Color.White, radius = w*.018f, center = Offset(w*.61f,h*.465f))
+        // detalhe brilhante
+        drawCircle(Color(0x99FFFFFF), radius = w*.07f, center = Offset(w*.35f,h*.37f))
+    }
+}
+"""
+new_creature = """@Composable
+fun AttackBurst(frame: Int, color: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val cx = size.width / 2f
+        val cy = size.height / 2f
+        val radius = size.minDimension * (0.16f + frame * 0.045f)
+        val stroke = 2.dp.toPx()
+        drawCircle(color, radius, Offset(cx, cy), style = Stroke(width = stroke))
+        drawLine(color, Offset(cx - radius * 1.5f, cy), Offset(cx + radius * 1.5f, cy), strokeWidth = stroke)
+        drawLine(color, Offset(cx, cy - radius * 1.5f), Offset(cx, cy + radius * 1.5f), strokeWidth = stroke)
+        drawLine(color, Offset(cx - radius, cy - radius), Offset(cx + radius, cy + radius), strokeWidth = stroke)
+        drawLine(color, Offset(cx + radius, cy - radius), Offset(cx - radius, cy + radius), strokeWidth = stroke)
+    }
+}
+
+@Composable
+fun CreatureArt(color: Color, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val slime = remember {
+        runCatching {
+            context.assets.open("clover_valley/Enemies/Slime/Slime-Idle-Sheet.png")
+                .use { BitmapFactory.decodeStream(it).asImageBitmap() }
+        }.getOrNull()
+    }
+    Canvas(modifier) {
+        if (slime != null) {
+            val side = minOf(size.width, size.height).toInt().coerceAtLeast(1)
+            drawImage(
+                image = slime,
+                srcOffset = IntOffset(0, 0),
+                srcSize = IntSize(64, 64),
+                dstOffset = IntOffset(((size.width - side) / 2).toInt(), ((size.height - side) / 2).toInt()),
+                dstSize = IntSize(side, side),
+                colorFilter = ColorFilter.tint(color)
+            )
+        } else {
+            drawCircle(color, radius = minOf(size.width, size.height) * .32f, center = Offset(size.width / 2, size.height / 2))
+        }
+    }
+}
+"""
+rep(old_creature, new_creature, "pixel creatures and attack animation")
+
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
