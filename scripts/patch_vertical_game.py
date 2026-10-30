@@ -292,5 +292,102 @@ fun CreatureArt(color: Color, modifier: Modifier = Modifier) {
 """
 rep(old_creature, new_creature, "pixel creatures and attack animation")
 
+
+# Three connected regions unlock through victories and remain saved between sessions.
+rep('    var storyStage by remember { mutableIntStateOf(prefs.getInt("storyStage", 0)) }\n',
+    '    var storyStage by remember { mutableIntStateOf(prefs.getInt("storyStage", 0)) }\n'
+    '    var area by remember { mutableIntStateOf(prefs.getInt("area", 0).coerceIn(0, 2)) }\n'
+    '    var maxArea by remember { mutableIntStateOf(prefs.getInt("maxArea", 0).coerceIn(0, 2)) }\n'
+    '    val areaName = listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area]\n',
+    "region progression state")
+rep('            .putInt("storyStage", storyStage).apply()\n',
+    '            .putInt("storyStage", storyStage).putInt("area", area).putInt("maxArea", maxArea).apply()\n',
+    "save regions")
+
+c=c.replace(
+    '        wins++\n        xp += amount\n',
+    '        wins++\n        var unlockedAreaName: String? = null\n'
+    '        if (wins >= 6 && maxArea < 2) { maxArea = 2; unlockedAreaName = "Bosque Antigo" }\n'
+    '        else if (wins >= 3 && maxArea < 1) { maxArea = 1; unlockedAreaName = "Lago Azul" }\n'
+    '        xp += amount\n',
+    1
+)
+c=c.replace(
+    '        battleResolved = true\n        save()\n    }\n\n    fun captureCreature()',
+    '        if (unlockedAreaName != null) message = "Nova região liberada: $unlockedAreaName!"\n'
+    '        battleResolved = true\n        save()\n    }\n\n    fun captureCreature()',
+    1
+)
+
+rep('                        Text("VALE DAS FOLHAS", color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
+    '                        Text(areaName, color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
+    "region title")
+rep('                    TextButton(onClick = { screen = "team" }) {\n',
+    '                    if (area < maxArea) TextButton(onClick = { area++; playerX = 4; playerY = 8; message = "Você chegou a $areaName."; save() }) {\n'
+    '                        Text("PRÓXIMA ÁREA", color = Gold, fontSize = 10.sp)\n'
+    '                    }\n'
+    '                    TextButton(onClick = { screen = "team" }) {\n',
+    "next region button")
+rep('                WorldMap(playerX, playerY, facing, steps) { dx, dy -> movePlayer(dx, dy) }\n',
+    '                WorldMap(playerX, playerY, facing, steps, area) { dx, dy -> movePlayer(dx, dy) }\n',
+    "region map call")
+rep('fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, onMove: (Int, Int) -> Unit) {',
+    'fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, onMove: (Int, Int) -> Unit) {',
+    "region map signature")
+
+rep('        val insideLake = nx in 0..2 && ny in 1..3\n        val insideHouse = nx in 5..8 && ny in 0..4\n',
+    '        val insideLake = when (area) { 0 -> nx in 0..2 && ny in 1..3; 1 -> nx in 6..8 && ny in 1..3; else -> nx in 2..4 && ny in 0..2 }\n'
+    '        val insideHouse = when (area) { 0 -> nx in 5..8 && ny in 0..4; 1 -> nx in 0..2 && ny in 0..4; else -> nx in 6..8 && ny in 0..3 }\n',
+    "region collisions")
+
+rep('''            for (y in 0 until rows) for (x in 3..4) {
+                drawImage(pathSheet, IntOffset(80, 16), IntSize(16, 16),
+                    IntOffset((x * cw).toInt(), (y * ch).toInt()), IntSize(cw.toInt() + 1, ch.toInt() + 1))
+            }
+''',
+'''            if (area == 2) {
+                for (y in 4..5) for (x in 0 until cols) {
+                    drawImage(pathSheet, IntOffset(80, 16), IntSize(16, 16),
+                        IntOffset((x * cw).toInt(), (y * ch).toInt()), IntSize(cw.toInt() + 1, ch.toInt() + 1))
+                }
+            } else {
+                val pathColumns = if (area == 1) 4..5 else 3..4
+                for (y in 0 until rows) for (x in pathColumns) {
+                    drawImage(pathSheet, IntOffset(80, 16), IntSize(16, 16),
+                        IntOffset((x * cw).toInt(), (y * ch).toInt()), IntSize(cw.toInt() + 1, ch.toInt() + 1))
+                }
+            }
+''', "region paths")
+
+rep('''            drawImage(waterSheet, IntOffset(0, 0), IntSize(48, 48), IntOffset(0, (ch * 1.1f).toInt()), IntSize((cw * 2.4f).toInt(), (ch * 2.4f).toInt()))
+''',
+'''            val lakeX = when (area) { 1 -> (cw * 6f).toInt(); 2 -> (cw * 2f).toInt(); else -> 0 }
+            val lakeY = if (area == 2) (ch * 1.2f).toInt() else (ch * 1.1f).toInt()
+            drawImage(waterSheet, IntOffset(0, 0), IntSize(48, 48), IntOffset(lakeX, lakeY), IntSize((cw * 2.4f).toInt(), (ch * 2.4f).toInt()))
+''', "region lakes")
+rep('''            drawImage(houseSheet, IntOffset(32, 112), IntSize(96, 112), IntOffset((cw * 5.25f).toInt(), (ch * .05f).toInt()), IntSize((cw * 3.1f).toInt(), (ch * 4.2f).toInt()))
+''',
+'''            val houseX = if (area == 1) (cw * .25f).toInt() else (cw * 5.25f).toInt()
+            drawImage(houseSheet, IntOffset(32, 112), IntSize(96, 112), IntOffset(houseX, (ch * .05f).toInt()), IntSize((cw * 3.1f).toInt(), (ch * 4.2f).toInt()))
+''', "region houses")
+rep('''            listOf(0 to 5, 1 to 8, 8 to 5, 8 to 8, 2 to 0).forEach { (tx, ty) ->
+''',
+'''            val treeSpots = when (area) {
+                1 -> listOf(0 to 5, 1 to 8, 8 to 5, 8 to 8, 4 to 0)
+                2 -> listOf(0 to 1, 1 to 2, 7 to 1, 8 to 2, 0 to 8, 8 to 8)
+                else -> listOf(0 to 5, 1 to 8, 8 to 5, 8 to 8, 2 to 0)
+            }
+            treeSpots.forEach { (tx, ty) ->
+''', "region trees")
+rep('''            drawImage(fenceSheet, IntOffset(0, 0), IntSize(32, 16), IntOffset((cw * 5.1f).toInt(), (ch * 3.5f).toInt()), IntSize((cw * 3.1f).toInt(), (ch * .55f).toInt()))
+''',
+'''            val fenceX = if (area == 1) (cw * .2f).toInt() else (cw * 5.1f).toInt()
+            drawImage(fenceSheet, IntOffset(0, 0), IntSize(32, 16), IntOffset(fenceX, (ch * 3.5f).toInt()), IntSize((cw * 3.1f).toInt(), (ch * .55f).toInt()))
+''', "region fences")
+rep('''        Text("Vila Clover   •   Lago Azul   •   Trilha da Floresta", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))
+''',
+'''        Text("$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))
+''', "region footer")
+
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
