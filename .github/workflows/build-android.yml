@@ -1,92 +1,67 @@
-name: Build Android APK
+name: Build Guardian Monsters Android APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - ".github/workflows/build-android.yml"
+    branches: ["main"]
 
 permissions:
   contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout do repositório
+      - name: Checkout do repositório de compilação
         uses: actions/checkout@v4
 
-      - name: Preparar Node.js
-        uses: actions/setup-node@v4
+      - name: Baixar o jogo completo e seus assets
+        uses: actions/checkout@v4
         with:
-          node-version: 22
+          repository: Pedra12/-pokemon-rpg-android
+          ref: main
+          path: source
+          submodules: recursive
 
-      - name: Preparar Java
+      - name: Aplicar identidade e localização inicial pt-BR
+        run: python3 source/scripts/apply_customizations.py
+
+      - name: Preparar Java para Android SDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "17"
 
       - name: Preparar Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platform-tools
 
-      - name: Baixar RPGAtlas na versão fixada
+      - name: Instalar plataforma e ferramentas Android
         run: |
-          git clone https://github.com/DriftwoodGaming/RPGAtlas.git rpgatlas
-          cd rpgatlas
-          git checkout 632d0b9d5856f42d31de5db383daa5ca2e4c3274
+          sdkmanager "platforms;android-30" "build-tools;30.0.3"
+          yes | sdkmanager --licenses
 
-      - name: Compilar a versão web do RPGAtlas
-        working-directory: rpgatlas
-        run: |
-          npm ci
-          npm run build
-          test -f dist/play.html
-          test -f dist/index.html
+      - name: Preparar Java para Gradle legado
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
 
-      - name: Preparar aplicativo Android com Capacitor
-        run: |
-          mkdir www
-          cp -R rpgatlas/dist/. www/
-          cp www/play.html www/index.html
-          cp rpgatlas/LICENSE www/THIRD-PARTY-LICENSE-RPGATLAS.txt
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "6.7.1"
 
-          cat > package.json <<'EOF'
-          {
-            "name": "rpg-android",
-            "version": "1.0.0",
-            "private": true,
-            "description": "Aplicativo Android baseado no RPGAtlas",
-            "scripts": {
-              "build": "echo Web assets preparados"
-            }
-          }
-          EOF
+      - name: Compilar APK Android
+        working-directory: source/GuardianMonsters/GuardianMonsters
+        run: gradle --no-daemon :android:assembleDebug
 
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
-
-          cat > capacitor.config.json <<'EOF'
-          {
-            "appId": "com.pedra12.rpgandroid",
-            "appName": "RPG Android",
-            "webDir": "www"
-          }
-          EOF
-
-          npx cap add android
-          npx cap sync android
-
-      - name: Gerar APK de depuração
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Disponibilizar APK
+      - name: Publicar APK como artefato
         uses: actions/upload-artifact@v4
         with:
-          name: RPG-Android-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: cronicas-de-arvandor-android-debug
+          path: source/GuardianMonsters/GuardianMonsters/android/build/outputs/apk/**/*.apk
           if-no-files-found: error
           retention-days: 14
