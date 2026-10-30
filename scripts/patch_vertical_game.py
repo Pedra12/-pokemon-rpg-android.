@@ -389,5 +389,11 @@ rep('''        Text("Vila Clover   •   Lago Azul   •   Trilha da Floresta", 
 '''        Text("$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))
 ''', "region footer")
 
+
+rep('fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, onMove: (Int, Int) -> Unit) {\n    val context = LocalContext.current\n',
+    'fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, onMove: (Int, Int) -> Unit) {\n    val areaName = listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n    val context = LocalContext.current\n',
+    "map region label")
+c=c.replace('message = "Você chegou a $areaName."','message = "Nova região desbloqueada!"');
+
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
