@@ -11,7 +11,7 @@ def rep(old, new, label):
     src = src.replace(old, new, 1)
 
 rep("import androidx.compose.foundation.Canvas\n",
-    "import androidx.compose.foundation.Canvas\nimport androidx.compose.foundation.gestures.detectDragGestures\n", "drag import")
+    "import androidx.compose.foundation.Canvas\nimport androidx.compose.foundation.Image\nimport androidx.compose.foundation.gestures.detectDragGestures\n", "drag import")
 rep("import androidx.compose.ui.platform.LocalContext\n",
     "import androidx.compose.ui.platform.LocalContext\nimport androidx.compose.ui.input.pointer.pointerInput\n", "pointer import")
 rep("import kotlin.random.Random\n",
@@ -563,6 +563,20 @@ rep('''        if (unlockedAreaName != null) message = "Nova região liberada: $
         }
         battleResolved = true
 ''', "story ending")
+
+
+# Show the supplied character portrait when the story character speaks.
+rep('    val context = LocalContext.current\n    val prefs = remember { context.getSharedPreferences("save", 0) }\n',
+    '    val context = LocalContext.current\n'
+    '    val storyPortrait = remember { runCatching { context.assets.open("clover_valley/Character/Portraits/portraits_free.png").use { BitmapFactory.decodeStream(it).asImageBitmap() } }.getOrNull() }\n'
+    '    val prefs = remember { context.getSharedPreferences("save", 0) }\n',
+    "story portrait asset")
+rep('                Text(message, color = Paper, fontSize = 13.sp, modifier = Modifier.fillMaxWidth().background(Panel, RoundedCornerShape(12.dp)).padding(12.dp))\n',
+    '                Row(Modifier.fillMaxWidth().background(Panel, RoundedCornerShape(12.dp)).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {\n'
+    '                    if ((message.startsWith("Lívia") || message.startsWith("Livia")) && storyPortrait != null) Image(bitmap = storyPortrait, contentDescription = "Lívia", modifier = Modifier.size(54.dp))\n'
+    '                    Text(message, color = Paper, fontSize = 13.sp, modifier = Modifier.weight(1f))\n'
+    '                }\n',
+    "story dialogue portrait")
 
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
