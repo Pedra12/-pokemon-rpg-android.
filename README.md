@@ -1,40 +1,44 @@
-# Crônicas de Arvandor — compilação Android
+# Aventura Elemental — Android
 
-Este repositório prepara a compilação Android do projeto aberto **Guardian Monsters**, adaptado inicialmente com o nome **Crônicas de Arvandor**.
+Este repositório compila o projeto Android vertical **Aventura Elemental** que está no arquivo `pokemon-rpg-android-clover-valley-map.zip` do repositório de origem.
 
-## Projeto original e código-fonte
-
-O código-fonte completo e os assets do jogo estão no repositório de trabalho:
-
-https://github.com/Pedra12/-pokemon-rpg-android
-
-O jogo original é **Guardian Monsters**, de Georg Eckert:
-https://github.com/lucidtanooki/guardian_monsters
-
-A compilação deste repositório baixa o repositório de trabalho acima, incluindo o submódulo com o jogo e seus recursos gráficos. Assim, não é necessário copiar manualmente os arquivos binários do jogo para este repositório.
-
-## Gerar o APK
+## Gerar o APK pelo celular
 
 1. Abra a aba **Actions**.
-2. Escolha **Build Guardian Monsters Android APK**.
-3. Toque em **Run workflow** ou abra uma execução automática concluída.
-4. Na seção **Artifacts**, baixe `cronicas-de-arvandor-android-debug`.
-5. Extraia o ZIP e instale o APK no Android.
+2. Escolha **Build Aventura Elemental Android APK**.
+3. Aguarde a execução terminar com sucesso.
+4. Abra a execução e baixe o artefato `aventura-elemental-android-debug`.
+5. Extraia o ZIP e instale o APK no Android. Se necessário, permita a instalação pelo navegador ou gerenciador de arquivos.
 
-O APK Debug é destinado a testes. Ainda não é uma versão final de publicação.
+## Base atual
 
-## Estado atual e limitações
+- Android nativo com Kotlin e Jetpack Compose.
+- Orientação retrato e interface imersiva.
+- Cenário desenhado com os tiles e sprites do pacote Clover Valley V2 Free.
+- Personagem com animações direcionais e caminhada.
+- Movimento por controles na tela, colisões simples e encontros aleatórios.
+- Batalhas por turnos, tipos elementais, poções, experiência e níveis.
+- Salvamento local de posição, direção, vida, poções e progresso.
 
-- A compilação Android foi executada com sucesso no repositório de trabalho original.
-- O nome do aplicativo foi alterado para **Crônicas de Arvandor** e foi adicionada uma primeira camada de textos em Português do Brasil.
-- A tradução ainda é parcial.
-- A base original usa orientação paisagem e resolução lógica 428×240. A interface ainda não foi adaptada para retrato 9:16.
-- A história, mapas, diálogos e identidade visual ainda precisam de adaptação para formar o RPG original planejado.
-- Os pacotes Clover Valley enviados anteriormente ainda precisam ser integrados e validados dentro do jogo; não considere que já estejam aplicados só porque os arquivos ZIP estão no outro repositório.
+## O que ainda está em desenvolvimento
 
-## Licenças e atribuições
+Esta é uma base jogável inicial, não a versão final do RPG planejado. Ainda faltam:
 
-O código de Guardian Monsters está sob **Apache License 2.0** e as artes principais indicadas pelo projeto estão sob **Creative Commons Attribution 3.0 (CC BY 3.0)**. Alguns recursos de terceiros usam licenças próprias, incluindo CC-BY-SA, BSD, MIT, CC0 e OFL. É obrigatório preservar os avisos e atribuições correspondentes antes de redistribuir o jogo.
+- Captura, equipe e evolução de criaturas.
+- Mais mapas e áreas desbloqueadas por progresso.
+- NPCs, diálogos, missões e história com começo, meio e fim.
+- Animações de ataque e efeitos de batalha.
+- Menu de idioma Português (Brasil) / English.
+- Controles por arrasto/toque no cenário e refinamento da interface.
+- Testes no aparelho Android real.
 
-Consulte os arquivos de licença e créditos no repositório de trabalho original e no projeto upstream:
-https://github.com/lucidtanooki/guardian_monsters
+## Recursos e licenças
+
+O pacote Clover Valley V2 Free foi fornecido pelo usuário. Seu arquivo de leitura está preservado nos assets. A página do autor informa que a versão gratuita pode ser usada em projetos não comerciais e não pode ser revendida nem redistribuída como pacote de assets. Antes de publicar ou distribuir o jogo, confira os termos atuais e mantenha os créditos/avisos exigidos.
+
+O jogo usa criaturas, nomes e identidade originais. Não utiliza sprites ou nomes oficiais de Pokémon.
+
+## Estrutura
+
+- `source/pokemon-rpg-android-clover-valley-map.zip`: projeto Android de origem.
+- `.github/workflows/build-android.yml`: compilação automática do APK.
