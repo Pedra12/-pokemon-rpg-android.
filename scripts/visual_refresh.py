@@ -37,8 +37,8 @@ rep('''    val fenceSheet = remember { context.assets.open("clover_valley/Tilese
 
     Column''', "sprites dos animais")
 
-rep('''        Canvas(Modifier.fillMaxWidth().height(310.dp)) {''',
-'''        Canvas(Modifier.fillMaxWidth().height(350.dp)) {''', "mapa maior")
+rep('''.height(310.dp).pointerInput(onMove) {''',
+'''.height(350.dp).pointerInput(onMove) {''', "mapa maior")
 
 rep('''            // Personagem original, com orientação correta e espelhamento lateral.
             val spriteSize = (minOf(cw, ch) * 1.75f).toInt().coerceAtLeast(1)
