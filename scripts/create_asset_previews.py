@@ -2,7 +2,7 @@
 from pathlib import Path
 from zipfile import ZipFile
 from PIL import Image, ImageDraw, ImageFont
-import tempfile
+import tempfile\nimport shutil
 
 source = Path("source")
 out = Path("asset-previews")
@@ -23,6 +23,27 @@ with tempfile.TemporaryDirectory() as tmp:
         matches = list(map_dir.rglob(name))
         if matches:
             Image.open(matches[0]).convert("RGBA").save(out / name)
+
+    shutil.copytree(clover_dir, out / "raw", dirs_exist_ok=True)
+
+    # Numbered 16x16 tile previews for authoring a real Tiled map.
+    tiles_dir = clover_dir / "Clover Valley V2 Free" / "Tilesets"
+    for tile_name in ("Grass_free.png", "Path_spring.png", "Water_free.png", "Fences.png"):
+        p = tiles_dir / tile_name
+        im = Image.open(p).convert("RGBA")
+        scale = 5
+        enlarged = im.resize((im.width * scale, im.height * scale), Image.Resampling.NEAREST)
+        overlay = Image.new("RGBA", enlarged.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(overlay)
+        cols, rows = im.width // 16, im.height // 16
+        for ty in range(rows):
+            for tx in range(cols):
+                idx = ty * cols + tx
+                x, y = tx * 16 * scale, ty * 16 * scale
+                d.rectangle((x, y, x + 16 * scale - 1, y + 16 * scale - 1), outline=(255, 255, 255, 180), width=1)
+                d.text((x + 2, y + 2), str(idx), fill=(255, 0, 0, 255))
+        enlarged = Image.alpha_composite(enlarged, overlay)
+        enlarged.save(out / ("indexed_" + tile_name))
 
     images = []
     for p in sorted(clover_dir.rglob("*.png")):
