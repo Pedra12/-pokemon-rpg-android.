@@ -33,6 +33,18 @@ jobs:
           path: asset-pack-report.txt
           retention-days: 14
 
+      - name: Gerar prévias visuais dos assets
+        run: |
+          python3 -m pip install --user pillow
+          python3 scripts/create_asset_previews.py
+
+      - name: Publicar prévias visuais
+        uses: actions/upload-artifact@v4
+        with:
+          name: previsualizacao-clover-valley
+          path: asset-previews/
+          retention-days: 14
+
       - name: Aplicar identidade e localização inicial pt-BR
         working-directory: source
         run: python3 scripts/apply_customizations.py
