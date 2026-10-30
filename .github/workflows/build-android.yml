@@ -1,4 +1,4 @@
-name: Build Guardian Monsters Android APK
+name: Build Aventura Elemental Android APK
 
 on:
   workflow_dispatch:
@@ -15,88 +15,52 @@ jobs:
       - name: Checkout do repositório de compilação
         uses: actions/checkout@v4
 
-      - name: Baixar o jogo completo e seus assets
+      - name: Baixar os arquivos enviados pelo usuário
         uses: actions/checkout@v4
         with:
           repository: Pedra12/-pokemon-rpg-android
           ref: main
           path: source
-          submodules: recursive
 
-      - name: Inspecionar pacotes gráficos enviados
+      - name: Extrair o projeto Android vertical
         run: |
-          python3 scripts/inspect_asset_packs.py
-          python3 scripts/inspect_asset_pack_contents.py
+          mkdir -p project
+          unzip -q source/pokemon-rpg-android-clover-valley-map.zip -d project
+          test -f project/settings.gradle.kts
+          test -f project/app/src/main/java/br/com/aventuraelemental/MainActivity.kt
+          test -d project/app/src/main/assets/clover_valley
 
-      - name: Publicar relatório dos assets
-        uses: actions/upload-artifact@v4
-        with:
-          name: relatorio-dos-assets
-          path: asset-pack-report.txt
-          retention-days: 14
-
-      - name: Extrair código do projeto Android vertical enviado
-        run: python3 scripts/extract_map_project_sources.py
-
-      - name: Publicar fontes do projeto Android vertical
-        uses: actions/upload-artifact@v4
-        with:
-          name: fontes-projeto-android-vertical
-          path: map-project-source/
-          retention-days: 14
-
-      - name: Gerar prévias visuais dos assets
-        run: |
-          python3 -m pip install --user pillow
-          python3 scripts/create_asset_previews.py
-
-      - name: Publicar prévias visuais
-        uses: actions/upload-artifact@v4
-        with:
-          name: previsualizacao-clover-valley
-          path: asset-previews/
-          retention-days: 14
-
-      - name: Aplicar identidade e localização inicial pt-BR
-        working-directory: source
-        run: python3 scripts/apply_customizations.py
-
-      - name: Preparar Java para Android SDK
+      - name: Preparar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Preparar Android SDK
+      - name: Preparar Android SDK 35
         uses: android-actions/setup-android@v3
         with:
           packages: |
             platform-tools
+            platforms;android-35
+            build-tools;35.0.0
 
-      - name: Instalar plataforma e ferramentas Android
-        run: |
-          sdkmanager "platforms;android-30" "build-tools;30.0.3"
-          yes | sdkmanager --licenses
+      - name: Aceitar licenças do Android SDK
+        run: yes | sdkmanager --licenses
 
-      - name: Preparar Java para Gradle legado
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "11"
-
-      - name: Preparar Gradle
+      - name: Preparar Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "6.7.1"
+          gradle-version: "8.9"
 
-      - name: Compilar APK Android
-        working-directory: source/GuardianMonsters/GuardianMonsters
-        run: gradle --no-daemon :android:assembleDebug
+      - name: Compilar APK Debug
+        run: |
+          gradle --no-daemon -p project :app:assembleDebug
+          test -s project/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Publicar APK como artefato
+      - name: Publicar APK para instalação no Android
         uses: actions/upload-artifact@v4
         with:
-          name: cronicas-de-arvandor-android-debug
-          path: source/GuardianMonsters/GuardianMonsters/android/build/outputs/apk/**/*.apk
+          name: aventura-elemental-android-debug
+          path: project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
