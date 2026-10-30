@@ -304,26 +304,22 @@ rep('            .putInt("storyStage", storyStage).apply()\n',
     '            .putInt("storyStage", storyStage).putInt("area", area).putInt("maxArea", maxArea).apply()\n',
     "save regions")
 
-c=c.replace(
-    '        wins++\n        xp += amount\n',
+rep('        wins++\n        xp += amount\n',
     '        wins++\n        var unlockedAreaName: String? = null\n'
     '        if (wins >= 6 && maxArea < 2) { maxArea = 2; unlockedAreaName = "Bosque Antigo" }\n'
     '        else if (wins >= 3 && maxArea < 1) { maxArea = 1; unlockedAreaName = "Lago Azul" }\n'
     '        xp += amount\n',
-    1
-)
-c=c.replace(
-    '        battleResolved = true\n        save()\n    }\n\n    fun captureCreature()',
+    "region unlock wins")
+rep('        battleResolved = true\n        save()\n    }\n\n    fun captureCreature()',
     '        if (unlockedAreaName != null) message = "Nova região liberada: $unlockedAreaName!"\n'
     '        battleResolved = true\n        save()\n    }\n\n    fun captureCreature()',
-    1
-)
+    "region unlock message")
 
 rep('                        Text("VALE DAS FOLHAS", color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
     '                        Text(areaName, color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
     "region title")
 rep('                    TextButton(onClick = { screen = "team" }) {\n',
-    '                    if (area < maxArea) TextButton(onClick = { area++; playerX = 4; playerY = 8; message = "Você chegou a $areaName."; save() }) {\n'
+    '                    if (area < maxArea) TextButton(onClick = { area++; playerX = 4; playerY = 8; message = "Nova região desbloqueada!"; save() }) {\n'
     '                        Text("PRÓXIMA ÁREA", color = Gold, fontSize = 10.sp)\n'
     '                    }\n'
     '                    TextButton(onClick = { screen = "team" }) {\n',
