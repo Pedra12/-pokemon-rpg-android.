@@ -390,5 +390,98 @@ rep('fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, o
     'fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, onMove: (Int, Int) -> Unit) {\n    val areaName = listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n    val context = LocalContext.current\n',
     "map region label")
 
+
+# Basic Portuguese/English setting; selection is saved locally.
+rep('    var screen by remember { mutableStateOf("home") }\n',
+    '    var screen by remember { mutableStateOf("home") }\n'
+    '    var language by remember { mutableStateOf(prefs.getString("language", "pt") ?: "pt") }\n'
+    '    fun tr(pt: String, en: String): String = if (language == "en") en else pt\n',
+    "language setting state")
+rep('            .putInt("storyStage", storyStage).putInt("area", area).putInt("maxArea", maxArea).apply()\n',
+    '            .putInt("storyStage", storyStage).putInt("area", area).putInt("maxArea", maxArea)\n'
+    '            .putString("language", language).apply()\n',
+    "save language")
+rep('                BigButton("CONTINUAR A JORNADA") { screen = "world" }\n',
+    '                BigButton(tr("CONTINUAR A JORNADA", "CONTINUE JOURNEY")) { screen = "world" }\n'
+    '                TextButton(onClick = { language = if (language == "pt") "en" else "pt"; prefs.edit().putString("language", language).apply() }) {\n'
+    '                    Text(if (language == "pt") "Idioma: Português (Brasil)" else "Language: English", color = Gold)\n'
+    '                }\n',
+    "language toggle")
+rep('                Text("Uma região selvagem espera por você.", color = Color.LightGray, textAlign = TextAlign.Center)\n',
+    '                Text(tr("Uma região selvagem espera por você.", "A wild region awaits you."), color = Color.LightGray, textAlign = TextAlign.Center)\n',
+    "home subtitle")
+rep('                Text("Nível $level  •  $wins vitórias  •  $xp XP", color = Gold)\n',
+    '                Text(if (language == "en") "Level $level  •  $wins wins  •  $xp XP" else "Nível $level  •  $wins vitórias  •  $xp XP", color = Gold)\n',
+    "home progress")
+rep('                Text("RPG original • Pixel-art • Salvamento local", color = Color.Gray, fontSize = 11.sp)\n',
+    '                Text(tr("RPG original • Pixel-art • Salvamento local", "Original RPG • Pixel art • Local save"), color = Color.Gray, fontSize = 11.sp)\n',
+    "home footer")
+rep('    val areaName = listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area]\n',
+    '    val areaName = if (language == "en") listOf("LEAF VALLEY", "BLUE LAKE", "ANCIENT FOREST")[area] else listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area]\n',
+    "translated region names")
+rep('                    if (area < maxArea) TextButton(onClick = { area++; playerX = 4; playerY = 8; message = "Nova região desbloqueada!"; save() }) {\n'
+    '                        Text("PRÓXIMA ÁREA", color = Gold, fontSize = 10.sp)\n',
+    '                    if (area < maxArea) TextButton(onClick = { area++; playerX = 4; playerY = 8; message = "Nova região desbloqueada!"; save() }) {\n'
+    '                        Text(tr("PRÓXIMA ÁREA", "NEXT AREA"), color = Gold, fontSize = 10.sp)\n',
+    "translated next region")
+rep('                        Text("EQUIPE (${1 + capturedCreatures.split("|").count { it.isNotBlank() }})", color = Gold)\n',
+    '                        Text((if (language == "en") "TEAM" else "EQUIPE") + " (" + (1 + capturedCreatures.split("|").count { it.isNotBlank() }) + ")", color = Gold)\n',
+    "translated team button")
+rep('                    TextButton(onClick = { save(); screen = "home" }) { Text("MENU", color = Gold) }\n',
+    '                    TextButton(onClick = { save(); screen = "home" }) { Text(tr("MENU", "MENU"), color = Gold) }\n',
+    "translated menu")
+rep('                        Text("$playerName  Nv. $level  •  $xp XP", color = Paper, fontSize = 13.sp)\n',
+    '                        Text(if (language == "en") "$playerName  Lv. $level  •  $xp XP" else "$playerName  Nv. $level  •  $xp XP", color = Paper, fontSize = 13.sp)\n',
+    "translated trainer line")
+rep('                BigButton("PROCURAR CRIATURA") { startBattle() }\n',
+    '                BigButton(tr("PROCURAR CRIATURA", "SEARCH FOR CREATURE")) { startBattle() }\n',
+    "translated encounter button")
+rep('                Text("ENCONTRO SELVAGEM", color = Gold, fontWeight = FontWeight.Black, letterSpacing = 1.sp)\n',
+    '                Text(tr("ENCONTRO SELVAGEM", "WILD ENCOUNTER"), color = Gold, fontWeight = FontWeight.Black, letterSpacing = 1.sp)\n',
+    "translated battle title")
+rep('                Text("SEUS MOVIMENTOS", color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
+    '                Text(tr("SEUS MOVIMENTOS", "YOUR MOVES"), color = Mint, fontWeight = FontWeight.Black, letterSpacing = 2.sp)\n',
+    "translated moves title")
+rep('                    MoveCard("Faísca", "FOGO", Modifier.weight(1f)) {\n',
+    '                    MoveCard(tr("Faísca", "Spark"), "FOGO", Modifier.weight(1f)) {\n',
+    "translated spark")
+rep('                    MoveCard("Investida", "NORMAL", Modifier.weight(1f)) {\n',
+    '                    MoveCard(tr("Investida", "Charge"), "NORMAL", Modifier.weight(1f)) {\n',
+    "translated charge")
+rep('                    ) { Text("Capturar", color = Mint, fontSize = 11.sp) }\n',
+    '                    ) { Text(tr("Capturar", "Capture"), color = Mint, fontSize = 11.sp) }\n',
+    "translated capture")
+rep('                    ) { Text("Poção +14 ($potions)", color = Mint, fontSize = 11.sp) }\n',
+    '                    ) { Text(if (language == "en") "Potion +14 ($potions)" else "Poção +14 ($potions)", color = Mint, fontSize = 11.sp) }\n',
+    "translated potion")
+rep('modifier = Modifier.weight(1f)) { Text("Fugir", color = Paper, fontSize = 11.sp) }\n',
+    'modifier = Modifier.weight(1f)) { Text(tr("Fugir", "Run"), color = Paper, fontSize = 11.sp) }\n',
+    "translated run")
+rep('                    BigButton("VOLTAR AO MAPA") { screen = "world"; message = "A trilha continua. Sua equipe está pronta."; save() }\n',
+    '                    BigButton(tr("VOLTAR AO MAPA", "BACK TO MAP")) { screen = "world"; message = "A trilha continua. Sua equipe está pronta."; save() }\n',
+    "translated return map")
+rep('                Text("SUA EQUIPE", color = Mint, fontWeight = FontWeight.Black, letterSpacing = 3.sp, fontSize = 22.sp)\n',
+    '                Text(tr("SUA EQUIPE", "YOUR TEAM"), color = Mint, fontWeight = FontWeight.Black, letterSpacing = 3.sp, fontSize = 22.sp)\n',
+    "translated team title")
+rep('                Text("CRIATURAS CAPTURADAS", color = Mint, fontWeight = FontWeight.Bold)\n',
+    '                Text(tr("CRIATURAS CAPTURADAS", "CAPTURED CREATURES"), color = Mint, fontWeight = FontWeight.Bold)\n',
+    "translated captured title")
+rep('                BigButton("VOLTAR AO MAPA") { screen = "world" }\n',
+    '                BigButton(tr("VOLTAR AO MAPA", "BACK TO MAP")) { screen = "world" }\n',
+    "translated team return")
+
+rep('fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, onMove: (Int, Int) -> Unit) {',
+    'fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, language: String, onMove: (Int, Int) -> Unit) {',
+    "language map signature")
+rep('                WorldMap(playerX, playerY, facing, steps, area) { dx, dy -> movePlayer(dx, dy) }\n',
+    '                WorldMap(playerX, playerY, facing, steps, area, language) { dx, dy -> movePlayer(dx, dy) }\n',
+    "language map call")
+rep('    val areaName = if (language == "en") listOf("LEAF VALLEY", "BLUE LAKE", "ANCIENT FOREST")[area.coerceIn(0, 2)] else listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n',
+    '    val areaName = if (language == "en") listOf("LEAF VALLEY", "BLUE LAKE", "ANCIENT FOREST")[area.coerceIn(0, 2)] else listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n',
+    "translated map area")
+rep('        Text("$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))\n',
+    '        Text(if (language == "en") "$areaName   •   Explore and find creatures" else "$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))\n',
+    "translated map footer")
+
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
