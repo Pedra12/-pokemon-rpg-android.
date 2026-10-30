@@ -11,6 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Checkout do repositório de compilação
         uses: actions/checkout@v4
@@ -36,14 +39,16 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Preparar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Instalar plataforma e ferramentas Android 35
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Configurar caminhos do Android SDK pré-instalado
+        run: |
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
 
       - name: Aceitar licenças do Android SDK
         run: yes | sdkmanager --licenses
+
+      - name: Instalar plataforma e ferramentas Android 35
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Preparar Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
