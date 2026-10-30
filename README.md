@@ -42,7 +42,7 @@ Esta versão é uma evolução jogável da base, mas ainda não deve ser conside
 
 ## Recursos e licenças
 
-O pacote Clover Valley V2 Free foi fornecido pelo usuário. O arquivo de leitura que acompanha o pacote foi preservado nos assets. Antes de publicar ou distribuir o jogo, confira os termos atuais na página original do autor e mantenha os créditos exigidos. O pacote gratuito tem restrições de uso comercial e de redistribuição dos arquivos de arte.
+O pacote Clover Valley V2 Free foi fornecido pelo usuário e seu arquivo de leitura foi preservado nos assets. O ZIP não contém uma licença completa e verificável. Antes de publicar, vender ou redistribuir o jogo, confirme os termos na página original do autor e mantenha os créditos exigidos. Até essa confirmação, trate as artes como recursos de uso restrito e não redistribua o pacote separadamente.
 
 O jogo usa criaturas, nomes e identidade originais. Não utiliza sprites ou nomes oficiais de Pokémon.
 
