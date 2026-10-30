@@ -267,6 +267,13 @@ fun AttackBurst(frame: Int, color: Color, modifier: Modifier = Modifier) {
 @Composable
 fun CreatureArt(color: Color, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    var slimeFrame by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(260)
+            slimeFrame = (slimeFrame + 1) % 3
+        }
+    }
     val slime = remember {
         runCatching {
             context.assets.open("clover_valley/Enemies/Slime/Slime-Idle-Sheet.png")
@@ -278,7 +285,7 @@ fun CreatureArt(color: Color, modifier: Modifier = Modifier) {
             val side = minOf(size.width, size.height).toInt().coerceAtLeast(1)
             drawImage(
                 image = slime,
-                srcOffset = IntOffset(0, 0),
+                srcOffset = IntOffset(slimeFrame * 64, 0),
                 srcSize = IntSize(64, 64),
                 dstOffset = IntOffset(((size.width - side) / 2).toInt(), ((size.height - side) / 2).toInt()),
                 dstSize = IntSize(side, side),
