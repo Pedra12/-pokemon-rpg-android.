@@ -483,5 +483,86 @@ rep('        Text("$areaName   •   Explore e encontre criaturas", color = Colo
     '        Text(if (language == "en") "$areaName   •   Explore and find creatures" else "$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))\n',
     "translated map footer")
 
+
+# Complete the opening story arc with a final guardian encounter.
+rep('''        if (nx == 4 && ny == 6 && storyStage == 0) {
+            storyStage = 1
+            message = "Lívia: As criaturas estão inquietas. O coração do Vale está perdendo sua luz."
+        } else if (nx == 7 && ny == 7 && storyStage == 1 && wins >= 2) {
+            storyStage = 2
+            message = "Guardião do Vale: Fortaleça sua equipe. O caminho para o Lago Azul está quase aberto."
+        }
+''',
+'''        if (nx == 4 && ny == 6 && storyStage == 0) {
+            storyStage = 1
+            message = tr("Lívia: As criaturas estão inquietas. O coração do Vale está perdendo sua luz.",
+                "Livia: The creatures are restless. The heart of the Valley is losing its light.")
+        } else if (nx == 7 && ny == 7 && storyStage == 1 && wins >= 2) {
+            storyStage = 2
+            message = tr("Guardião do Vale: Fortaleça sua equipe. O caminho para o Lago Azul está quase aberto.",
+                "Valley Guardian: Strengthen your team. The path to Blue Lake is almost open.")
+        } else if (area == 1 && nx == 4 && ny == 6 && storyStage == 2 && wins >= 5) {
+            storyStage = 3
+            message = tr("Lívia: O lago revelou a última trilha. O Guardião Sombrio espera na floresta antiga.",
+                "Livia: The lake revealed the final trail. The Shadow Guardian waits in the ancient forest.")
+        } else if (area == 2 && nx == 4 && ny == 5 && storyStage == 3 && wins >= 8) {
+            message = tr("Lívia: É agora. Enfrente o Guardião Sombrio e restaure o coração do Vale.",
+                "Livia: This is it. Face the Shadow Guardian and restore the heart of the Valley.")
+        } else if (storyStage >= 4 && nx == 4 && ny == 5) {
+            message = tr("O Vale está em paz novamente. Sua jornada ficará na memória de todos.",
+                "The Valley is at peace again. Your journey will be remembered.")
+        }
+''', "story arc events")
+
+rep('''    fun startBattle() {
+        val pool = listOf(
+            Triple("Musguito", "NATUREZA", Color(0xFF7ED6A5)),
+            Triple("Chispim", "FOGO", Color(0xFFFF855E)),
+            Triple("Ondino", "ÁGUA", Color(0xFF69C7FF))
+        )
+        val pick = pool.random()
+        enemyName = pick.first; enemyElement = pick.second; enemyColor = pick.third
+        enemyMaxHp = 28 + level * 5; enemyHp = enemyMaxHp; enemyAttack = 5 + level * 2
+        turn = 0; battleResolved = false; screen = "battle"
+        message = "$enemyName apareceu! Escolha seu movimento."
+    }
+''',
+'''    fun startBattle() {
+        if (area == 2 && wins >= 8 && storyStage == 3) {
+            enemyName = "Guardião Sombrio"
+            enemyElement = "SOMBRA"
+            enemyColor = Color(0xFF9B83D5)
+            enemyMaxHp = 88
+            enemyHp = enemyMaxHp
+            enemyAttack = 12
+            message = tr("O Guardião Sombrio surgiu diante do coração do Vale!",
+                "The Shadow Guardian appeared before the heart of the Valley!")
+        } else {
+            val pool = listOf(
+                Triple("Musguito", "NATUREZA", Color(0xFF7ED6A5)),
+                Triple("Chispim", "FOGO", Color(0xFFFF855E)),
+                Triple("Ondino", "ÁGUA", Color(0xFF69C7FF))
+            )
+            val pick = pool.random()
+            enemyName = pick.first; enemyElement = pick.second; enemyColor = pick.third
+            enemyMaxHp = 28 + level * 5; enemyHp = enemyMaxHp; enemyAttack = 5 + level * 2
+            message = "$enemyName apareceu! Escolha seu movimento."
+        }
+        turn = 0; battleResolved = false; screen = "battle"
+    }
+''', "final guardian battle")
+
+rep('''        if (unlockedAreaName != null) message = "Nova região liberada: $unlockedAreaName!"
+        battleResolved = true
+''',
+'''        if (unlockedAreaName != null) message = tr("Nova região liberada: $unlockedAreaName!", "New region unlocked: $unlockedAreaName!")
+        if (enemyName == "Guardião Sombrio") {
+            storyStage = 4
+            message = tr("Você venceu o Guardião Sombrio! O coração do Vale voltou a brilhar. Fim da jornada.",
+                "You defeated the Shadow Guardian! The heart of the Valley shines again. The end of the journey.")
+        }
+        battleResolved = true
+''', "story ending")
+
 game.write_text(src, encoding="utf-8")
 print("Vertical RPG features patched:", game)
