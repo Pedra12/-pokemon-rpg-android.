@@ -35,6 +35,16 @@ jobs:
           path: asset-pack-report.txt
           retention-days: 14
 
+      - name: Extrair código do projeto Android vertical enviado
+        run: python3 scripts/extract_map_project_sources.py
+
+      - name: Publicar fontes do projeto Android vertical
+        uses: actions/upload-artifact@v4
+        with:
+          name: fontes-projeto-android-vertical
+          path: map-project-source/
+          retention-days: 14
+
       - name: Gerar prévias visuais dos assets
         run: |
           python3 -m pip install --user pillow
