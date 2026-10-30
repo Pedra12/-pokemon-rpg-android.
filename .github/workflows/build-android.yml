@@ -24,7 +24,8 @@ jobs:
           submodules: recursive
 
       - name: Aplicar identidade e localização inicial pt-BR
-        run: python3 source/scripts/apply_customizations.py
+        working-directory: source
+        run: python3 scripts/apply_customizations.py
 
       - name: Preparar Java para Android SDK
         uses: actions/setup-java@v4
