@@ -2,7 +2,8 @@
 from pathlib import Path
 from zipfile import ZipFile
 from PIL import Image, ImageDraw, ImageFont
-import tempfile\nimport shutil
+import tempfile
+import shutil
 
 source = Path("source")
 out = Path("asset-previews")
