@@ -476,7 +476,7 @@ rep('fun WorldMap(px: Int, py: Int, facing: String, stepCount: Int, area: Int, o
 rep('                WorldMap(playerX, playerY, facing, steps, area) { dx, dy -> movePlayer(dx, dy) }\n',
     '                WorldMap(playerX, playerY, facing, steps, area, language) { dx, dy -> movePlayer(dx, dy) }\n',
     "language map call")
-rep('    val areaName = if (language == "en") listOf("LEAF VALLEY", "BLUE LAKE", "ANCIENT FOREST")[area.coerceIn(0, 2)] else listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n',
+rep('    val areaName = listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n',
     '    val areaName = if (language == "en") listOf("LEAF VALLEY", "BLUE LAKE", "ANCIENT FOREST")[area.coerceIn(0, 2)] else listOf("VALE DAS FOLHAS", "LAGO AZUL", "BOSQUE ANTIGO")[area.coerceIn(0, 2)]\n',
     "translated map area")
 rep('        Text("$areaName   •   Explore e encontre criaturas", color = Color(0xFFC5E4D2), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 5.dp))\n',
