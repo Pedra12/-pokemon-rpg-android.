@@ -415,7 +415,7 @@ rep('                BigButton("CONTINUAR A JORNADA") { screen = "world" }\n',
     '                }\n',
     "language toggle")
 rep('                Text("Uma região selvagem espera por você.", color = Color.LightGray, textAlign = TextAlign.Center)\n',
-    '                Text(tr("Uma região selvagem espera por você.", "A wild region awaits you."), color = Color.LightGray, textAlign = TextAlign.Center)\n',
+    '                Text(tr("O coração do Vale está perdendo sua luz. Descubra o motivo.", "The Valley’s heart is losing its light. Find out why."), color = Color.LightGray, textAlign = TextAlign.Center)\n',
     "home subtitle")
 rep('                Text("Nível $level  •  $wins vitórias  •  $xp XP", color = Gold)\n',
     '                Text(if (language == "en") "Level $level  •  $wins wins  •  $xp XP" else "Nível $level  •  $wins vitórias  •  $xp XP", color = Gold)\n',
