@@ -23,6 +23,16 @@ jobs:
           path: source
           submodules: recursive
 
+      - name: Inspecionar pacotes gráficos enviados
+        run: python3 scripts/inspect_asset_packs.py
+
+      - name: Publicar relatório dos assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-dos-assets
+          path: asset-pack-report.txt
+          retention-days: 14
+
       - name: Aplicar identidade e localização inicial pt-BR
         working-directory: source
         run: python3 scripts/apply_customizations.py
