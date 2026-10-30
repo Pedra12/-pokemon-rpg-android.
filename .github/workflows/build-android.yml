@@ -36,13 +36,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Preparar Android SDK 35
+      - name: Preparar Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platform-tools
-            platforms;android-35
-            build-tools;35.0.0
+
+      - name: Instalar plataforma e ferramentas Android 35
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Aceitar licenças do Android SDK
         run: yes | sdkmanager --licenses
